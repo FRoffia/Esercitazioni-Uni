@@ -21,19 +21,17 @@ void print_array(char *A){
 int main(){
     srand(time(NULL));
 
-    signed char Scalare[VECTOR_LENGTH];
+    signed char* Maschere = _mm_malloc(VECTOR_LENGTH*DATA_SIZE,SSE_DATA_LANE);
 
     for(int i = 0; i < VECTOR_LENGTH; i++){
-        Scalare[i] = (char) rand() % 255 -127;
+        Maschere[i] = (char) rand() % 255 -127;
     }
 
     printf("Codice scalare:\n");
     for(int i = 0; i < VECTOR_LENGTH; i++){
-        printf("%d  ",Scalare[i]);
+        printf("%d  ",Maschere[i]);
     }
     printf("\n");
-
-
 
     int min = 100000;
 
@@ -42,20 +40,14 @@ int main(){
     
 
     for(int i = 0; i < VECTOR_LENGTH; i++){
-        if(Scalare[i] < min){
-            min = Scalare[i];
+        if(Maschere[i] < min){
+            min = Maschere[i];
         }
     }
 
     uint64_t scalare_end = __rdtsc();
     printf("Minimo: %i",min);
     printf("\nClock: %lu\n\n\n\n", scalare_end-scalare_start);
-
-    signed char* Maschere = _mm_malloc(VECTOR_LENGTH*DATA_SIZE,SSE_DATA_LANE);
-
-    for(int i = 0; i < VECTOR_LENGTH; i++){
-        Maschere[i] = (char) rand() % 255 -127;
-    }
 
     __m128i * p_Maschere = (__m128i*) Maschere;
 
