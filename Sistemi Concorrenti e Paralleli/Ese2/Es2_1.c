@@ -30,8 +30,8 @@ void* visita (int t_id){
             printf("Thread %i in attesa\n",t_id);
             biglietteria.thread_sospesi ++;
             pthread_mutex_unlock(&biglietteria.m);
-            printf("Thread %i in pista\n",t_id);
             sem_wait(&biglietteria.s);
+            printf("Thread %i in pista\n",t_id);
             pthread_mutex_lock(&biglietteria.m);
             biglietteria.thread_sospesi --;
         }
@@ -70,9 +70,9 @@ void* visita (int t_id){
 
     sleep(rand()%10);
 
-    pthread_mutex_lock(&biglietteria.m);
 
-    
+    //libero il monopattino/bici
+    pthread_mutex_lock(&biglietteria.m);
 
     biglietteria.posti_liberi ++;
 
