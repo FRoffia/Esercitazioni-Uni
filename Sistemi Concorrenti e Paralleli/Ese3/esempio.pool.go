@@ -1,5 +1,3 @@
-// pool di risorse equivalenti con guardie logiche
-
 package main
 
 import (
