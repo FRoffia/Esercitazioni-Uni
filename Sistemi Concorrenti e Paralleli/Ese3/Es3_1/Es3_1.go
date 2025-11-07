@@ -23,10 +23,10 @@ const MAXPROC = 2000
 const NB = 100
 const NE = 100
 
-var richiesta = make(chan Request) //canali richiesta
-var rilascio = make(chan Resource) //canali rilascio
-var risorsa [MAXPROC]chan Resource //canali risorse?????
-var done = make(chan int)          //canalus canalus
+var richiesta = make(chan Request) //canale richiesta
+var rilascio = make(chan Resource) //canale rilascio
+var risorsa [MAXPROC]chan Resource //canali risorse, uno per ogni cliente
+var done = make(chan int)
 var termina = make(chan int)
 
 func when(b bool, c chan int) chan int {
@@ -98,7 +98,7 @@ func server(nb, ne int) {
 				fmt.Printf("[server]  restituita risorsa %s, res_id: %d\n", res.res_type, res.res_id)
 
 				if in_attesa_e > 0 {
-					for i = MAXPROC - 1; i >= 0 && attesa_e[i] == 0; i++ {
+					for i = MAXPROC - 1; i > 0 && attesa_e[i] == 0; i-- {
 					}
 
 					for j = 0; j < nb && !libera_e[j]; j++ {
@@ -123,7 +123,7 @@ func server(nb, ne int) {
 				fmt.Printf("[server]  restituita risorsa %s, res_id: %d\n", res.res_type, res.res_id)
 
 				if in_attesa_t > 0 {
-					for i = MAXPROC - 1; i >= 0 && attesa_t[i] == 0; i++ {
+					for i = MAXPROC - 1; i > 0 && attesa_t[i] == 0; i-- {
 					}
 
 					for j = 0; j < nb && !libera_t[j]; j++ {
@@ -160,7 +160,7 @@ func server(nb, ne int) {
 					risorsa[req.cli_id] <- res
 					fmt.Printf("[server]  allocata risorsa %s, res_id: %d a cliente %d \n", res.res_type, i, req.cli_id)
 				} else {
-					for i = 0; i < MAXPROC && attesa_t[i] == 0; i++ {
+					for i = 0; i < MAXPROC && attesa_t[i] != 0; i++ {
 					}
 					attesa_t[i] = req.cli_id
 					in_attesa_t++
@@ -179,7 +179,7 @@ func server(nb, ne int) {
 					risorsa[req.cli_id] <- res
 					fmt.Printf("[server]  allocata risorsa %s, res_id: %d a cliente %d \n", res.res_type, i, req.cli_id)
 				} else {
-					for i = 0; i < MAXPROC && attesa_e[i] == 0; i++ {
+					for i = 0; i < MAXPROC && attesa_e[i] != 0; i++ {
 					}
 					attesa_e[i] = req.cli_id
 					in_attesa_e++
@@ -210,7 +210,7 @@ func server(nb, ne int) {
 					risorsa[req.cli_id] <- res
 					fmt.Printf("[server]  allocata risorsa %s, res_id: %d a cliente %d \n", res.res_type, i, req.cli_id)
 				} else {
-					for i = 0; i < MAXPROC && attesa_e[i] == 0; i++ {
+					for i = 0; i < MAXPROC && attesa_e[i] != 0; i++ {
 					}
 					attesa_e[i] = req.cli_id
 					in_attesa_e++
@@ -236,7 +236,7 @@ func main() {
 	fmt.Scanf("%d", &nb)
 	fmt.Printf("\n quante bici elettriche (max %d)? ", NE)
 	fmt.Scanf("%d", &ne)
-	fmt.Println("risorse da gestire:%d", nb+ne)
+	fmt.Println("risorse da gestire:", nb+ne)
 
 	//inizializzazione canali
 	for i := 0; i < MAXPROC; i++ {
