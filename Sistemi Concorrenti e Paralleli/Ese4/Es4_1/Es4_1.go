@@ -1,6 +1,3 @@
-// ponte_sensounico_prio project main.go -- priorità di direzione ai veicoli da NORD
-// ponte_senso_unico project main.go
-
 package main
 
 import (
