@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"math.h": "c"
+		},
+		"ada.projectFile": "Sistemi Concorrenti e Paralleli/Ese5/empty.gpr"
+	}
+}
