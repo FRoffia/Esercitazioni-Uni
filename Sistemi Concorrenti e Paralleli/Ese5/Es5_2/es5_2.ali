@@ -7,6 +7,7 @@ RN
 RV NO_ALLOCATORS
 RV NO_DELAY
 RV NO_DIRECT_BOOLEAN_OPERATORS
+RV NO_ENUMERATION_MAPS
 RV NO_EXCEPTION_HANDLERS
 RV NO_EXCEPTIONS
 RV NO_FIXED_POINT
@@ -27,7 +28,7 @@ RV MAX_SELECT_ALTERNATIVES=3
 RV MAX_TASK_ENTRIES=3
 RV MAX_TASKS=1+
 
-U es5_1%b		es5_1.adb		3d10e4ba NE OO SU IL
+U es5_2%b		es5_2.adb		91184101 NE OO SU IL
 W ada%s			ada.ads			ada.ali
 Z ada.calendar.delays%s	a-caldel.adb		a-caldel.ali
 W ada.integer_text_io%s	a-inteio.ads		a-inteio.ali
@@ -37,6 +38,7 @@ W ada.text_io%s		a-textio.adb		a-textio.ali
 Z system%s		system.ads		system.ali
 Z system.concat_3%s	s-conca3.adb		s-conca3.ali
 Z system.concat_5%s	s-conca5.adb		s-conca5.ali
+Z system.concat_7%s	s-conca7.adb		s-conca7.ali
 Z system.img_int%s	s-imgint.ads		s-imgint.ali
 Z system.parameters%s	s-parame.adb		s-parame.ali
 Z system.soft_links%s	s-soflin.adb		s-soflin.ali
@@ -65,7 +67,7 @@ D a-tags.ads		20240521074738 9eaa38c6 ada.tags%s
 D a-textio.ads		20240521074738 5c2c6153 ada.text_io%s
 D a-tiinio.ads		20240521074738 e58fa6fb ada.text_io.integer_io%s
 D a-unccon.ads		20240521074738 0e9b276f ada.unchecked_conversion%s
-D es5_1.adb		20251125150516 97770c4d es5_1%b
+D es5_2.adb		20251126141304 3b7fa9f6 es5_2%b
 D interfac.ads		20240521074738 15f799c2 interfaces%s
 D i-c.ads		20240521074738 5c5a6c17 interfaces.c%s
 D i-cstrea.ads		20240521074738 e53d8b8e interfaces.c_streams%s
@@ -76,6 +78,7 @@ D s-c_time.ads		20240904144414 535885c5 system.c_time%s
 D s-casuti.ads		20240521074738 cf13d755 system.case_util%s
 D s-conca3.ads		20240521074738 8a7a19a2 system.concat_3%s
 D s-conca5.ads		20240521074738 4099d1db system.concat_5%s
+D s-conca7.ads		20240521074738 09fd419f system.concat_7%s
 D s-crtl.ads		20240521074738 8a0692f8 system.crtl%s
 D s-exctab.ads		20240521074738 91bef6ef system.exception_table%s
 D s-ficobl.ads		20240521074738 dc5161d4 system.file_control_block%s
@@ -116,55 +119,61 @@ D s-wchcon.ads		20240521074738 d9032363 system.wch_con%s
 D s-widuns.ads		20240521074738 866a5800 system.wid_uns%s
 D s-widthu.ads		20240521074738 b32f15e2 system.width_u%s
 G a e
-G c Z b b [es5_1 standard 11 11 none]
+G c Z b b [es5_2 standard 11 11 none]
 X 1 ada.ads
 16K9*Ada 20e8 21|8r6 8r19 9r5 9r18
 X 7 a-inteio.ads
 18K13*Integer_Text_IO[19|46] 21|8w23 9r22
 X 18 a-textio.ads
 58K13*Text_IO 787e16 21|8w10 9r9
-282U14*New_Line 21|65s16 82s16 100s16 106s7 136s4
-566U14*Put_Line 21|41s7 63s16 64s16 80s16 81s16 97s16 98s16 99s16 105s7 112s7
-X 21 es5_1.adb
-11U11*es5_1 11b11 137l5 137t10
-12i4 N{integer} 16r34
-13i4 N_C{integer} 15r32 49r23 99r78
-15I9 cliente_ID<short_short_integer> 20r27 26r32 27r31 28r38 51r82 63r70
-. 68r107 80r70 85r43 97r71 112r29 129r13
-16I9 sportello_ID<short_short_integer> 36r27 44r16 51r26 54r25 68r29 71r25
-. 88r25
-18E9 req_ID 18e30 20r44
-18n21 TUR{18E9} 113r16 131r39
-18n26 EVE{18E9} 133r39
-20T14 cliente 20d23 20d39 21r22 110b14 122t7 131r28 133r28
-20i23 ID{15I9} 112r47 114r20 116r21 118r20 120r21
-20e39 REQ{18E9} 113r10
-21P9 ac(20T14) 124r16
-25T14 server 29l8 29e14 31r8 34b14 107t7
-26Y13 infoTUR 26>22 51b63 66l17 66t24 68r59 114s12
-26i22 cl_ID{15I9} 56r52 63r87
-27Y13 infoEVE 27>21 68b88 83l17 83t24 118s12
-27i21 cl_ID{15I9} 73r52 80r87
-28Y18 rilascio 28>28 85b23 101l17 101t25 116s12 120s12
-28i28 cl_ID{15I9} 89r51 97r88
-31t4 S{25T14} 114r10 116r10 118r10 120r10
-36a4 sportelli_pieni(integer) 45m10 55r22 56m22 72r22 73m22 89r22 90m22
-37i4 pieni{integer} 51r18 58m22 58r29 64r41 68r21 75m22 75r29 81r41 92m22
-. 92r29 98r41
-38i4 gestiti{integer} 49r13 93m22 93r31 99r54
-44i11 i{16I9} 45r26
-51i72 cl_ID{15I9}
-53i16 spor_ID{integer} 57m22 63r29
-54i20 i{16I9} 55r38 56r38 57r41
-68i97 cl_ID{15I9}
-70i16 spor_ID{integer} 74m22 80r29
-71i20 i{16I9} 72r38 73r38 74r41
-85i33 cl_ID{15I9}
-87i16 spor_ID{integer} 91m22 97r29
-88i20 i{16I9} 89r38 90r38 91r41
-124p4 New_client{21P9} 131m10 133m10
-129i8 I{15I9} 130r18 131r37 133r37
-X 47 s-stausa.ads
+282U14*New_Line 21|67s16 84s16 115s16 121s7 151s4
+566U14*Put_Line 21|43s7 65s16 66s16 82s16 83s16 107s16 108s16 109s16 111s19
+. 113s19 120s7 127s7
+X 21 es5_2.adb
+11U11*es5_2 11b11 152l5 152t10
+12i4 N{integer} 17r34
+13i4 N_C{integer} 16r32 51r23 109r78
+14i4 K{integer} 53r79 70r103 98r47 100r50 110r40 111r122 113r122
+16I9 cliente_ID<short_short_integer> 21r27 27r32 28r31 29r38 53r144 65r70
+. 70r148 82r70 87r43 107r71 127r29 144r13
+17I9 sportello_ID<short_short_integer> 37r27 46r16 53r26 56r25 70r29 73r25
+. 90r25
+19E9 req_ID 19e30 21r44 29r55 87r63
+19n21 TUR{19E9} 98r71 128r16 146r39
+19n26 EVE{19E9} 100r74 148r39
+21T14 cliente 21d23 21d39 22r22 125b14 137t7 146r28 148r28
+21i23 ID{16I9} 127r47 129r20 131r21 133r20 135r21
+21e39 REQ{19E9} 128r10 131r24 135r24
+22P9 ac(21T14) 139r16
+26T14 server 30l8 30e14 32r8 35b14 122t7
+27Y13 infoTUR 27>22 53b125 68l17 68t24 70r60 129s12
+27i22 cl_ID{16I9} 58r52 65r87
+28Y13 infoEVE 28>21 53r96 70b129 85l17 85t24 133s12
+28i21 cl_ID{16I9} 75r52 82r87
+29Y18 rilascio 29>28 29>50 87b23 116l17 116t25 131s12 135s12
+29i28 cl_ID{16I9} 91r51 107r88
+29e50 REQ{19E9} 98r65 100r68 107r101
+32t4 S{26T14} 129r10 131r10 133r10 135r10
+37a4 sportelli_pieni(integer) 47m10 57r22 58m22 74r22 75m22 91r22 92m22
+38i4 pieni{integer} 53r18 60m22 60r29 66r41 70r21 77m22 77r29 83r41 94m22
+. 94r29 108r41
+39i4 gestiti{integer} 51r13 95m22 95r31 109r54
+40i4 gestiti_prio{integer} 53r66 70r90 98r34 99m25 99r39 100r37 101m25 101r39
+. 110r27 111r64 113r64
+46i11 i{17I9} 47r26
+53i134 cl_ID{16I9}
+55i16 spor_ID{integer} 59m22 65r29
+56i20 i{17I9} 57r38 58r38 59r41
+70i138 cl_ID{16I9}
+72i16 spor_ID{integer} 76m22 82r29
+73i20 i{17I9} 74r38 75r38 76r41
+87i33 cl_ID{16I9}
+87e55 REQ{19E9}
+89i16 spor_ID{integer} 93m22 107r29
+90i20 i{17I9} 91r38 92r38 93r41
+139p4 New_client{22P9} 146m10 148m10
+144i8 I{16I9} 145r18 146r37 148r37
+X 48 s-stausa.ads
 207U14*Initialize 208i<c,__gnat_stack_usage_initialize>22
 272U14*Output_Results 276i<c,__gnat_stack_usage_output_results>22
 
