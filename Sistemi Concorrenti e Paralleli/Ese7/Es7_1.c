@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
     }
 
     double start, end;
-    //start = omp_get_wtime(); 
+    start = omp_get_wtime(); 
 	
     int i,j,k,my_rank,tmp;
     # pragma omp parallel  num_threads(N) shared(A,B) private(i,j,k,my_rank,tmp) firstprivate(DIM,N)
@@ -50,23 +50,19 @@ int main(int argc, char* argv[]){
         # pragma omp for
         for(i=0; i<DIM; i++){
             for(j = 0; j < DIM; j++){
-                tmp = (int) A[i][j]*B[j][i];
-
                 for(k = 0; k < DIM; k++){
-                    C[k][j] += tmp;
+                    tmp = (int) A[i][j]*B[j][k];
                     C[i][k] += tmp;
                 }
-
-                C[i][j] -= tmp;
             }
         }
         
         
     }
 
-    //end = omp_get_wtime(); 
+    end = omp_get_wtime(); 
 
-    printf("A:\n");
+    /*printf("A:\n");
     for(i = 0; i < DIM; i++){
         for(j = 0; j < DIM; j++){
             printf("%i   ",A[i][j]);
@@ -88,7 +84,9 @@ int main(int argc, char* argv[]){
             printf("%i   ",C[i][j]);
         }
         printf("\n");
-    }
+    }*/
+
+    printf("\nTempo di esecuzione: %lf\n",end-start);
 
 }
 

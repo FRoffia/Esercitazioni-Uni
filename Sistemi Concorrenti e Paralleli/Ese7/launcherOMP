@@ -11,4 +11,4 @@
 #SBATCH -e job.err
 
 
-srun ./sommavet 48
+srun ./Es7_1.c 500 10
