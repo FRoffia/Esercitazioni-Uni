@@ -152,6 +152,8 @@ void* accettazione(){
     pthread_mutex_unlock(&ambulatorio_bambini.m);
 
     printf("!!!!!!!!!!FINITI PAZIENTI!!!!!!!!!!!!!!!!!\n\n");
+
+    pthread_exit(NULL);
 }
 
 void* cura(void* arg){

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-#define MAX 200
+#define MAX 20
 #define N 100
 #define ATTIVAZIONI_RUBINETTI 10
 
@@ -20,7 +20,7 @@ typedef struct {
 Cisterna cisterna;
 
 void* riempi();
-void* svuota();
+void* svuota(void* arg);
 
 int main(){
     pthread_t autocisterna;
@@ -40,7 +40,7 @@ int main(){
     }
 
     for(int i = 0; i < N; i++){
-        rc = pthread_create(&rubinetti[i],NULL,svuota,NULL);
+        rc = pthread_create(&rubinetti[i],NULL,svuota,i);
         if(rc){
             printf("Errore creazione thread rubinetto %i, codice:%i",i,rc);
             exit(-1);
@@ -65,7 +65,7 @@ int main(){
 }
 
 void* riempi(){
-    
+
     for(int i = 0; i < N*ATTIVAZIONI_RUBINETTI/MAX; i++){
         pthread_mutex_lock(&cisterna.m);
 
@@ -74,5 +74,38 @@ void* riempi(){
         }
 
         cisterna.acqua = MAX;
+        sleep(2);
+        printf("\nCisterna riempita.\n\n");
+
+        pthread_cond_broadcast(&cisterna.CISTERNA_RIEMPITA);
+        pthread_mutex_unlock(&cisterna.m);
     }
+
+    printf("\n!!!!!!!!!!!!!!!Finiti riempimenti\n\n");
+    pthread_exit(NULL);
+}
+
+void* svuota(void* arg){
+    int t_id = (int) arg;
+
+    for(int i = 0; i < ATTIVAZIONI_RUBINETTI; i++){
+        pthread_mutex_lock(&cisterna.m);
+
+        while(cisterna.acqua == 0){
+            pthread_cond_wait(&cisterna.CISTERNA_RIEMPITA,&cisterna.m);
+        }
+
+        cisterna.acqua --;
+        printf("Rubinetto %i usato, acqua rimanente:%i\n",t_id,cisterna.acqua);
+
+        if(cisterna.acqua == 0){
+            pthread_cond_signal(&cisterna.CISTERNA_VUOTA);
+        }
+
+        pthread_mutex_unlock(&cisterna.m);
+        sleep(1);
+    }
+
+    printf("\n--------------Rubinetto %i terminato\n\n",t_id);
+    pthread_exit(NULL);
 }
