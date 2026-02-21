@@ -8,17 +8,14 @@
 
 int main() {
     int width = 3840;
-    int height = 2160;
+    int height = 5120;
     
     int16_t* matrix = (int16_t*)_mm_malloc(width * height * sizeof(int16_t), 64);
     int16_t* out = (int16_t*)_mm_malloc(width * height * sizeof(int16_t), 64);
-    int16_t* out_simple = (int16_t*)_mm_malloc(width * height * sizeof(int16_t), 64);
-    int16_t* out_2 = (int16_t*)_mm_malloc(width * height * sizeof(int16_t), 64);
-    int16_t* out_simple_2 = (int16_t*)_mm_malloc(width * height * sizeof(int16_t), 64);
     
     // Inizializza con id sequenziale
     for (int i = 0; i < width * height; i++) {
-        matrix[i] = i%256;
+        matrix[i] = i;
     }
     
     // Stampa tutta la matrice
@@ -35,55 +32,17 @@ int main() {
 
     clock_t toc = clock(); //inizio nostro codice
 
-    printf("SIMD: Tempo(%ix%i):    %.3f seconds\n",width,height, (double)(toc - tic) / CLOCKS_PER_SEC);
+    printf("Tempo(%ix%i):    %.3f seconds\n",width,height, (double)(toc - tic) / CLOCKS_PER_SEC);
 
     printf("\n\n\n\n");
 
-    tic = clock(); //inizio nostro codice
-
-    transpose_matrix_simple(matrix,out_simple,width,height);
-
-    toc = clock(); //inizio nostro codice
-
-    printf("SIMPLE: Tempo(%ix%i):    %.3f seconds\n",width,height, (double)(toc - tic) / CLOCKS_PER_SEC);
-
-    
+    /*
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
-            if(out[i * height + j] != out_simple[i * height + j]){
-                printf("[%i,%i] SIMD: %6d, SIMPLE: %6d\n", i, j, out[i * height + j],out_simple[i * height + j]);
-            }
-            
+            printf("%6d ", out[i * height + j]);
         }
-    }
-
-    tic = clock(); //inizio nostro codice
-
-    transpose_matrix(out,out_2,height,width);
-
-    toc = clock(); //inizio nostro codice
-
-    printf("SIMD: Tempo(%ix%i):    %.3f seconds\n",width,height, (double)(toc - tic) / CLOCKS_PER_SEC);
-
-    printf("\n\n\n\n");
-
-    tic = clock(); //inizio nostro codice
-
-    transpose_matrix_simple(out_simple,out_simple_2,height,width);
-
-    toc = clock(); //inizio nostro codice
-
-    printf("SIMPLE: Tempo(%ix%i):    %.3f seconds\n",width,height, (double)(toc - tic) / CLOCKS_PER_SEC);
-
-    
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            if(out[i * width + j] != out_simple[i * width + j]){
-                printf("[%i,%i] SIMD: %6d, SIMPLE: %6d\n", i, j, out[i * width + j],out_simple[i * width + j]);
-            }
-            
-        }
-    }
+        printf("\n");
+    }*/
     
     free(matrix);
     return 0;
@@ -93,50 +52,20 @@ void transpose_matrix(int16_t* matrix, int16_t* out, int width, int height){
     __m512i block_in[32];
     __m512i block_out[32];
 
-    __m512i zero = _mm512_setzero_si512(); // registro di zeri
+    for (int i = 0; i < (width*height)/32; i += 32) {
+        int x_0 = i%width;
+        int y_0 = (i/width)*32;
+        
+        //carico le 32 righe (32 x 32)
+        for(int k = 0; k < 32; k++){
+            block_in[k] = _mm512_load_si512((const __m512i*)(matrix+x_0+(y_0+k)*width));
+        }
 
-    for (int by = 0; by < height; by += 32) {
-        for (int bx = 0; bx < width; bx += 32) {
+        transpose_block(block_in,block_out);
 
-            int valid_rows = (by + 32 <= height) ? 32 : (height - by);
-            int valid_cols = (bx + 32 <= width) ? 32 : (width - bx);
-            
-            //carico blocco
-            for(int k = 0; k < 32; k++){
-                if(k < valid_rows && valid_cols == 32){
-                    //riga completa
-                    block_in[k] = _mm512_loadu_si512((const __m512i*)(matrix + bx + (by+k)*width));
-                } else if(k < valid_rows){
-                    //riga parziale, carico manualmente
-                    int16_t temp[32] = {0};
-                    for(int j = 0; j < valid_cols; j++){
-                        temp[j] = matrix[bx + j + (by+k)*width];
-                    }
-                    block_in[k] = _mm512_loadu_si512((const __m512i*)temp);
-                } else {
-                    //riga fuori bounds, uso zeri
-                    block_in[k] = zero;
-                }
-            }
-            
-
-            transpose_block(block_in,block_out);
-
-            //salvo le 32 righe trasposte (32 x 32)
-            for(int k = 0; k < 32; k++){
-                if(k < valid_cols && valid_rows == 32){
-                    //colonna completa
-                    _mm512_storeu_si512((__m512i*)(out + by + (bx+k)*height), block_out[k]);
-                } else if(k < valid_cols){
-                    //colonna parziale, salvo manualmente
-                    int16_t temp[32];
-                    _mm512_storeu_si512((__m512i*)temp, block_out[k]);
-                    for(int j = 0; j < valid_rows; j++){
-                        out[by + j + (bx+k)*height] = temp[j];
-                    }
-                } 
-                //altrimenti non salvo
-            }
+        //salvo le 32 righe trasposte (32 x 32)
+        for(int k = 0; k < 32; k++){
+            _mm512_store_si512(out+(y_0+(x_0+k)*width),block_out[k]);
         }
     }
 }
@@ -297,12 +226,4 @@ void transpose_block(__m512i block_in[32],__m512i block_out[32]){
     block_out[30] = _mm512_permutex2var_epi16(t_3hhhh[0],mask_4l,t_3hhhh[1]);
     block_out[31] = _mm512_permutex2var_epi16(t_3hhhh[0],mask_4h,t_3hhhh[1]);
     
-}
-
-void transpose_matrix_simple(int16_t* matrix, int16_t* out, int width, int height){
-    for(int i = 0; i < height; i++){
-        for(int j = 0; j < width; j++){
-            out[j*height+i] = matrix[i*width+j];
-        }
-    }
 }
